@@ -3,7 +3,9 @@ let atom: Atom;
 let walter: Walter;
 
 function preload() {
-    walter = loadJSON('../walter_hartwell_white.json') as Walter;
+    walter = loadJSON(
+        'https://raw.githubusercontent.com/Bowserinator/Periodic-Table-JSON/master/PeriodicTableJSON.json'
+    ) as Walter;
 }
 
 function setup() {

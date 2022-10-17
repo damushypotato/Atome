@@ -1,7 +1,7 @@
 let atom;
 let walter;
 function preload() {
-    walter = loadJSON('../walter_hartwell_white.json');
+    walter = loadJSON('https://raw.githubusercontent.com/Bowserinator/Periodic-Table-JSON/master/PeriodicTableJSON.json');
 }
 function setup() {
     angleMode(DEGREES);
