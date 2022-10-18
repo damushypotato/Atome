@@ -1,4 +1,5 @@
 let atom;
+let atomic;
 let walter;
 function preload() {
     walter = loadJSON('https://raw.githubusercontent.com/Bowserinator/Periodic-Table-JSON/master/PeriodicTableJSON.json');
@@ -6,12 +7,16 @@ function preload() {
 function setup() {
     angleMode(DEGREES);
     createCanvas(windowWidth, windowHeight);
-    const ask = prompt('Atomic Number', '1');
-    const num = parseInt(ask);
-    atom = new Atom(width / 2, height / 2, num);
+    atom = new Atom(width / 2, height / 2, 1);
+    atomic = createSlider(1, 119, 1, 1)
+        .position(width / 2 - width / 2.5 - 100, height / 2 + 120)
+        .style('width', '200px');
 }
 function draw() {
     background(255);
+    const atomicNumber = atomic.value();
+    if (atomicNumber !== atom.number)
+        atom.setElement(atomicNumber);
     atom.draw();
 }
 const electronShells = [2, 8, 8, 18, 18, 32, 32];
