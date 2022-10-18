@@ -1,4 +1,4 @@
-const electronShells = [2, 8, 8, 18, 18, 32, 32];
+const electronShells = [2, 8, 18, 32, 32, 18, 8, 2];
 const nuclearShells = [4, 10, 18, 26, 34, 42, 50, 62, 74];
 
 interface Walter {
@@ -50,7 +50,6 @@ class Atom {
     nucleons: (Proton | Neutron)[][];
     electrons: Electron[][];
     data: Walter['elements'][any];
-    drawInfo: boolean = true;
 
     private angle = 0;
 
@@ -70,20 +69,20 @@ class Atom {
 
     setElement(number: number) {
         const element = walter.elements[number - 1];
-        this.data = element;
         this.setAtom(element.number, Math.round(element.atomic_mass), 0, element.shells);
     }
 
-    setAtom(atomic: number, mass?: number, ionic?: number, electronShellsProfile?: number[]) {
-        mass = mass || atomic * 2;
-        ionic = ionic || 0;
+    setAtom(atomic: number, mass: number, charge?: number, electronShellsProfile?: number[]) {
+        charge = charge || 0;
         electronShellsProfile = electronShellsProfile || electronShells;
+
+        this.data = walter.elements[atomic - 1];
 
         this.number = atomic;
 
         const P = atomic;
         const N = mass - atomic;
-        const E = atomic - ionic;
+        const E = atomic - charge;
 
         let electrons: Electron[] = [];
         for (let i = 0; i < E; i++) {
@@ -124,7 +123,70 @@ class Atom {
         return shells;
     };
 
+    drawIsotope(x: number, y: number) {
+        push();
+        textAlign(CENTER, CENTER);
+        textSize(20);
+        const mass = this.nucleons.reduce((acc, shell) => acc + shell.length, 0);
+        const e = this.electrons.reduce((acc, shell) => acc + shell.length, 0);
+        const charge = this.number - e;
+        text(
+            `${this.data.symbol}-${mass}${
+                charge == 0 ? '' : ` ${abs(charge)}${charge > 0 ? '+' : '-'}`
+            }`,
+            x,
+            y
+        );
+        pop();
+    }
+
+    static drawSymbol(num: number, x: number, y: number) {
+        push();
+        const a = walter.elements[num - 1];
+        translate(x, y);
+        fill('#' + a['cpk-hex']);
+        rectMode(CENTER);
+        rect(0, 0, 200, 200);
+        fill(0);
+        textAlign(LEFT, CENTER);
+        textSize(35);
+        text(a.number, -95, -75);
+        textAlign(CENTER, CENTER);
+        textSize(50);
+        text(a.symbol, 0, -10);
+        textSize(25);
+        text(a.name, 0, 30);
+        textSize(20);
+        text(a.atomic_mass, 0, 65);
+        pop();
+    }
+
+    static drawInfo(num: number, x: number, y: number) {
+        const a = walter.elements[num - 1];
+        const summary = a.summary.split(' ');
+        const blocks = [];
+        let currentBlock = '';
+        for (let i = 0; i < summary.length; i++) {
+            const word = summary[i];
+            if (textWidth(currentBlock + word) > width / 4) {
+                blocks.push(currentBlock);
+                currentBlock = '';
+            }
+            currentBlock += word + ' ';
+        }
+        blocks.push(currentBlock);
+
+        push();
+        textSize(20);
+        textAlign(CENTER, CENTER);
+        for (let i = blocks.length - 1; i >= 0; i--) {
+            text(blocks[i], x, y - 25 * (blocks.length - i));
+        }
+        pop();
+    }
+
     draw() {
+        push();
         translate(this.x, this.y);
 
         for (let i = 0; i < this.electrons.length; i++) {
@@ -160,26 +222,7 @@ class Atom {
         }
 
         this.angle += 1;
-
-        if (this.drawInfo) {
-            const x = -width / 2.5;
-            const y = 0;
-            translate(x, y);
-            noFill();
-            rectMode(CENTER);
-            rect(0, 0, 200, 200);
-            fill(0);
-            textAlign(LEFT, CENTER);
-            textSize(35);
-            text(this.number, -95, -75);
-            textAlign(CENTER, CENTER);
-            textSize(50);
-            text(this.data.symbol, 0, -10);
-            textSize(25);
-            text(this.data.name, 0, 30);
-            textSize(20);
-            text(this.data.atomic_mass, 0, 65);
-        }
+        pop();
     }
 }
 
