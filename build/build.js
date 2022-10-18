@@ -6,7 +6,9 @@ function preload() {
 function setup() {
     angleMode(DEGREES);
     createCanvas(windowWidth, windowHeight);
-    atom = new Atom(width / 2, height / 2, 5);
+    const ask = prompt('Atomic Number', '1');
+    const num = parseInt(ask);
+    atom = new Atom(width / 2, height / 2, num);
 }
 function draw() {
     background(255);
